@@ -9,8 +9,8 @@ module.exports = asyncHandler(async (req, res) => {
     console.log("UserID param not sent with request");
     return res.status(400);
   }
-  console.log("access chats ");
-  // console.log(1);
+  console.log("access chats route");
+
   var isChat = await Chat.find({
     isGroupChat: false,
     $and: [
@@ -21,17 +21,13 @@ module.exports = asyncHandler(async (req, res) => {
     .populate("users")
     .populate("latestMessage");
 
-  // console.log(2);
-
   isChat = await User.populate(isChat, {
     path: "latestMessage.sender",
     select: "name image email",
   });
 
-  // console.log(3);
-
   if (isChat.length > 0) {
-    console.log(isChat[0]);
+    // console.log(isChat[0]);
     res.send(isChat[0]);
   } else {
     var chatData = {
@@ -40,8 +36,6 @@ module.exports = asyncHandler(async (req, res) => {
       users: [req.user._id, userId],
     };
 
-    console.log(4);
-
     try {
       const createdChat = await Chat.create(chatData);
 
@@ -49,11 +43,10 @@ module.exports = asyncHandler(async (req, res) => {
         "users",
       );
 
-      console.log(5);
-      console.log(fullChat);
+      // console.log(fullChat);
       res.status(200).send(fullChat);
     } catch (error) {
-      res.status(400);
+      res.status(401);
       throw new Error(error.message);
     }
   }

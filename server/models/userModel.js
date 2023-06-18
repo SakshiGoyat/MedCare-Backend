@@ -5,12 +5,12 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "name is required"],
     },
     email: {
       type: String,
       unique: true,
-      required: true,
+      required: [true, "email is required."],
     },
     password: { type: String, required: true },
     image: {
@@ -20,9 +20,24 @@ const userSchema = mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      required: true,
       default: false,
     },
+    isSystemAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    isDoctor: {
+      type: Boolean,
+      default: false,
+    },
+    notification:{
+      type:Array,
+      default:[]
+    },
+    seenNotification:{
+      type:Array,
+      default:[]
+    }
   },
   { timestaps: true }
 );

@@ -10,7 +10,7 @@ module.exports = asyncHandler(async (req, res) => {
         ],
       }
     : {};
-      console.log("all users");
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  // console.log("all users route " + users);
   res.send(users);
 });

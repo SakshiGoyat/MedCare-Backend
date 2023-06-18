@@ -1,10 +1,13 @@
 const express = require("express");
+
+// rest object
 const app = express();
 const dotenv = require("dotenv");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
-// const http = require("http");
-// var server = http.createServer(app);
+const morgan = require("morgan");
+const color = require("colors");
+
 app.use(
   cors({
     origin: "*",
@@ -12,14 +15,19 @@ app.use(
   })
 );
 
-require("./db/conn");
 const { notFound, errorHandler } = require("./Middleware/errorMiddleware");
 const { Server } = require("socket.io");
+const connectDB = require("./db/conn");
 app.use(require("./routes/auth"));
 dotenv.config({ path: "./config.env" });
-const port = process.env.PORT;
 
+connectDB();
+// port
+const port = process.env.PORT || 5000;
+
+// middlewares
 app.use(express.json());
+app.use(morgan("dev"));
 
 app.use(
   fileUpload({
@@ -30,24 +38,10 @@ app.use(
 app.use(notFound);
 app.use(errorHandler);
 
-app.get("/", (req, res) => {
-  res.send("API is running.");
-});
-
-// app.get("/api/chat", (req, res) => {
-//   res.send(chats);
-// });
-
-// app.get("/api/chat/:id", (req,res)=>{
-//     // console.log(req.params.id);
-//      const singleChat = chats.find((c)=> c._id === req.params.id);
-//      res.send(singleChat);
-// });
-
-// app.use("/api/user", userRoutes);
-
 const server = app.listen(port, () => {
-  console.log(`Listening to ${port} port`);
+  console.log(
+    `Listening to ${process.env.NODE_MODE} Mode on port ${port}`.bgCyan.white
+  );
 });
 
 const io = require("socket.io")(server, {
@@ -69,7 +63,7 @@ io.on("connection", (socket) => {
     socket.join(room);
     console.log("User Joined Room: " + room);
   });
-  
+
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 

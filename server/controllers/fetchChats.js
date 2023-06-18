@@ -5,7 +5,7 @@ const User = require("../models/userModel");
 module.exports = asyncHandler(async (req, res) => {
   try {
 
-    console.log("fetch chats")
+    console.log("fetch chats route")
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
       .populate("users")
       .populate("groupAdmin")
@@ -15,12 +15,10 @@ module.exports = asyncHandler(async (req, res) => {
           path: "latestMessage.sender",
           select: "name image email",
         });
-        // console.log(results);
         res.status(200).send(results);
       })
   } catch (err) {
     res.status(400);
-
     throw new Error(err.message);
   }
 });
